@@ -1,7 +1,7 @@
 import express from "express"
 import type { Request, Response } from "express"
 import { body, validationResult } from "express-validator"
-import * as ClientService from "./clients.service"
+import * as ClientService from "./client.service"
 
 export const clientRouter = express.Router();
 

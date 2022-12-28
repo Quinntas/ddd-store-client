@@ -2,7 +2,7 @@ import * as dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
 
-import { clientRouter } from "./api/v1/clients/clients.router";
+import { clientRouter } from "./api/v1/client/client.router";
 
 dotenv.config();
 
