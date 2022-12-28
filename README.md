@@ -5,10 +5,9 @@ API to a prisma model.
 
 The entire application is contained within the `app.ts` file.
 
-`config.ts` is a minimal Rack configuration for unicorn.
+`config.ts` is a minimal Rack configuration.
 
-`tests.ts` runs a simplistic test and generates the API
-documentation below.
+`tests.ts` runs a simplistic test and generates the API.
 
 ## Install
 
