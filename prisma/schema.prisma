@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id          Int          @id @default(autoincrement())
-  publicId    String       @default(uuid())
+  publicId    String       @unique @default(uuid())
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   name        String
@@ -24,7 +24,7 @@ model User {
 
 model Wallet {
   id             Int          @id @default(autoincrement())
-  publicId       String       @default(uuid())
+  publicId       String       @unique @default(uuid())
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   currentBalance Float
@@ -34,7 +34,7 @@ model Wallet {
 
 model Client {
   id        Int      @id @default(autoincrement())
-  publicId  String   @default(uuid())
+  publicId  String   @unique @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   cpf       String   @unique
@@ -46,7 +46,7 @@ model Client {
 
 model Shopkeepers {
   id        Int      @id @default(autoincrement())
-  publicId  String   @default(uuid())
+  publicId  String   @unique @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   cnpj      String   @unique

@@ -5,10 +5,13 @@ import * as ClientService from "./client.service"
 
 export const clientRouter = express.Router();
 
-clientRouter.get("/", async (request: Request, response: Response) => {
+clientRouter.get("/:publicId", async (request: Request, response: Response) => {
+    const publicId: string = request.params.publicId
     try {
-        const clients = await ClientService.listClients()
-        return response.status(200).json(clients)
+        const client = await ClientService.getClient(publicId)
+        if (client)
+            return response.status(200).json(client)
+        return response.status(404).json({})
     } catch (error: any) {
         response.status(500).json(error.message)
     }

@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
-
 import { clientRouter } from "./api/v1/client/client.router";
 
 dotenv.config();
@@ -18,6 +17,6 @@ APP.use(cors());
 APP.use(express.json());
 APP.use("/api/v1/client", clientRouter)
 
-APP.listen(PORT, ()=>{
+APP.listen(PORT, () => {
     console.log(`LISTENING ON PORT ${PORT}`)
 })

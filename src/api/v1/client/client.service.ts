@@ -2,8 +2,11 @@ import { db } from "../../../utils/db.server";
 
 import { Client } from "../../../types";
 
-export const listClients = async (): Promise<Client[]> => {
-    return db.client.findMany({
+export const getClient = async (publicId: string): Promise<Client | null> => {
+    return db.client.findUnique({
+        where: {
+            publicId
+        },
         select: {
             publicId: true,
             cpf: true,
