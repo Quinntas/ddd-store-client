@@ -28,11 +28,11 @@ export const updateClient = async (newClient: NewClient, publicId: string): Prom
     })
 }
 
-export const deleteClient = async (publicId: string): Promise<Client> => {
-    return db.client.delete({
+export const deleteClient = async (publicId: string): Promise<void> => {
+    await db.client.delete({
         where: {
             publicId
-        },
-        select: clientSelectData,
+        }
     })
+    return
 }

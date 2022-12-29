@@ -29,8 +29,43 @@ clientRouter.post("/", checkSchema(clientValidation), async (request: Request, r
         return response.status(200).json(client)
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError)
-            if(error.code === 'P2002')
-                next(new HttpException(400, `The following fields already exists: ${error?.meta?.target.toString()}`))
+            switch (error.code) {
+                case 'P2002':
+                    next(new HttpException(400, 'the following fields already exists', error.meta))
+            }
+        next(new HttpException(500, 'a internal error has occured'))
+    }
+})
+
+clientRouter.put("/:publicId", checkSchema(clientValidation), async (request: Request, response: Response, next: NextFunction) => {
+    const errors = validationResult(request)
+    if (!errors.isEmpty())
+        return response.status(400).json({ errors: errors.array() });
+    const publicId: string = request.params.publicId
+    try {
+        const client = await ClientService.updateClient(request.body, publicId)
+        return response.status(200).json(client)
+    } catch (error: any) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError)
+            switch (error.code) {
+                case 'P2025':
+                    next(new HttpException(404, 'the following client was not found'))
+            }
+        next(new HttpException(500, 'a internal error has occured'))
+    }
+})
+
+clientRouter.delete("/:publicId", async (request: Request, response: Response, next: NextFunction) => {
+    const publicId: string = request.params.publicId
+    try {
+        await ClientService.deleteClient(publicId)
+        return response.status(200).json({ publicId: "was deleted successfully" })
+    } catch (error: any) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError)
+            switch (error.code) {
+                case 'P2025':
+                    next(new HttpException(404, 'the following client was not found'))
+            }
         next(new HttpException(500, 'a internal error has occured'))
     }
 })
