@@ -8,7 +8,7 @@ export const schemaValidation: Schema = {
         errorMessage: "user.name is missing",
         isString: true,
         isLength: {
-            options: { max: 3, min: 50 },
+            options: { max: 50, min: 3 },
             errorMessage: 'user.name must at least 3 characters long and max 50 characters long'
         },
         matches: {

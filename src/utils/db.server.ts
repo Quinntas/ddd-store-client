@@ -7,7 +7,7 @@ declare global {
 }
 
 if (!global.__db) {
-    global.__db = new PrismaClient();
+    global.__db = new PrismaClient({ errorFormat: 'minimal' });
 }
 
 db = global.__db;

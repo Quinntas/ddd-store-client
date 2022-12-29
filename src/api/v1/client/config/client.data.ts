@@ -1,26 +1,11 @@
 import { NewClient } from "../../../../types"
+import { selectData } from "../../shared/config/shared.data"
 
 // How data will be returned to end user
-export const selectData = {
-    publicId: true,
-    cpf: true,
-    user: {
-        select: {
-            publicId: true,
-            name: true,
-            email: true,
-            password: true
-        }
-    },
-    wallet: {
-        select: {
-            publicId: true,
-            currentBalance: true
-        }
-    }
-}
+export const clientSelectData = Object.assign(selectData, { cpf: true })
 
 // How data will be updated/created
+// Tem que ser separado do shared/config/shared.data.ts pois pode haver atributos do cliente que nao tem no shopkeeper e vise versa 
 export const updateData = (newClient: NewClient) => {
     return {
         cpf: newClient.cpf,

@@ -1,5 +1,5 @@
 import { db } from "../../../utils/db.server";
-import { selectData, updateData } from "./config/client.data";
+import { clientSelectData, updateData } from "./config/client.data";
 import { Client, NewClient } from "../../../types";
 
 export const getClient = async (publicId: string): Promise<Client | null> => {
@@ -7,14 +7,14 @@ export const getClient = async (publicId: string): Promise<Client | null> => {
         where: {
             publicId
         },
-        select: selectData
+        select: clientSelectData
     })
 }
 
 export const createClient = async (newClient: NewClient): Promise<Client> => {
     return db.client.create({
         data: updateData(newClient),
-        select: selectData
+        select: clientSelectData
     })
 }
 
@@ -24,7 +24,7 @@ export const updateClient = async (newClient: NewClient, publicId: string): Prom
             publicId
         },
         data: updateData(newClient),
-        select: selectData,
+        select: clientSelectData,
     })
 }
 
@@ -33,6 +33,6 @@ export const deleteClient = async (publicId: string): Promise<Client> => {
         where: {
             publicId
         },
-        select: selectData,
+        select: clientSelectData,
     })
 }
