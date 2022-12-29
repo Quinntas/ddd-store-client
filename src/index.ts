@@ -1,8 +1,8 @@
 import * as dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
-
 import { clientRouter } from "./api/v1/client/client.router";
+import errorMiddleware from "./middleware/error.middleware";
 
 dotenv.config();
 
@@ -17,7 +17,8 @@ const APP = express();
 APP.use(cors());
 APP.use(express.json());
 APP.use("/api/v1/client", clientRouter)
+APP.use(errorMiddleware)
 
-APP.listen(PORT, ()=>{
+APP.listen(PORT, () => {
     console.log(`LISTENING ON PORT ${PORT}`)
 })

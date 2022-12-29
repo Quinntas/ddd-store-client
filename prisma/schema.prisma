@@ -11,47 +11,61 @@ datasource db {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  publicId    String       @default(uuid())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id          Int         @id @default(autoincrement())
+  publicId    String      @unique @default(uuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   name        String
-  email       String       @unique
+  email       String      @unique
   password    String
   Client      Client?
-  Shopkeepers Shopkeepers?
+  Shopkeepers Shopkeeper?
 }
 
 model Wallet {
-  id             Int          @id @default(autoincrement())
-  publicId       String       @default(uuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id             Int         @id @default(autoincrement())
+  publicId       String      @unique @default(uuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   currentBalance Float
   Client         Client?
-  Shopkeepers    Shopkeepers?
+  Shopkeepers    Shopkeeper?
 }
 
 model Client {
-  id        Int      @id @default(autoincrement())
-  publicId  String   @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cpf       String   @unique
-  wallet    Wallet   @relation(fields: [walletId], references: [id])
-  walletId  Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique
+  id          Int           @id @default(autoincrement())
+  publicId    String        @unique @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  cpf         String        @unique
+  wallet      Wallet        @relation(fields: [walletId], references: [id])
+  walletId    Int           @unique
+  user        User          @relation(fields: [userId], references: [id])
+  userId      Int           @unique
+  Transaction Transaction[]
 }
 
-model Shopkeepers {
-  id        Int      @id @default(autoincrement())
-  publicId  String   @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cnpj      String   @unique
-  wallet    Wallet   @relation(fields: [walletId], references: [id])
-  walletId  Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique
+model Shopkeeper {
+  id          Int           @id @default(autoincrement())
+  publicId    String        @unique @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  cnpj        String        @unique
+  wallet      Wallet        @relation(fields: [walletId], references: [id])
+  walletId    Int           @unique
+  user        User          @relation(fields: [userId], references: [id])
+  userId      Int           @unique
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id           Int        @id @default(autoincrement())
+  publicId     String     @unique @default(uuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isValid      Boolean
+  client       Client     @relation(fields: [clientId], references: [id])
+  clientId     Int
+  shopkeeper   Shopkeeper @relation(fields: [shopkeeperId], references: [id])
+  shopkeeperId Int
 }
