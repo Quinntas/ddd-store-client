@@ -1,8 +1,9 @@
 import express from "express"
 import type { Request, Response, NextFunction } from "express"
-import { body, validationResult } from "express-validator"
+import { checkSchema, validationResult } from "express-validator"
 import * as ClientService from "./client.service"
 import HttpException from "../../../exception/http.exception";
+import { clientValidation } from "./config/client.validation";
 
 export const clientRouter = express.Router();
 
@@ -16,4 +17,10 @@ clientRouter.get("/:publicId", async (request: Request, response: Response, next
     } catch (error: any) {
         next(new HttpException(404, 'a internal error has occured'))
     }
+})
+
+clientRouter.post("/", checkSchema(clientValidation), async (request: Request, response: Response, next: NextFunction) => {
+    const errors = validationResult(request)
+    if (!errors.isEmpty())
+        return response.status(400).json({ errors: errors.array() });
 })
