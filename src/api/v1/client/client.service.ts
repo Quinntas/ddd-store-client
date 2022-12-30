@@ -1,6 +1,6 @@
 import { db } from "../../../utils/db.server";
-import { clientSelectData, updateData } from "./config/client.data";
-import { Client, NewClient } from "../../../types";
+import { clientCreateData, clientSelectData, clientUpdateData } from "./config/client.data";
+import { Client, NewClient } from "../shared/types";
 
 export const getClient = async (publicId: string): Promise<Client | null> => {
     return db.client.findUnique({
@@ -13,7 +13,7 @@ export const getClient = async (publicId: string): Promise<Client | null> => {
 
 export const createClient = async (newClient: NewClient): Promise<Client> => {
     return db.client.create({
-        data: updateData(newClient),
+        data: clientCreateData(newClient),
         select: clientSelectData
     })
 }
@@ -23,7 +23,7 @@ export const updateClient = async (newClient: NewClient, publicId: string): Prom
         where: {
             publicId
         },
-        data: updateData(newClient),
+        data: clientUpdateData(newClient),
         select: clientSelectData,
     })
 }

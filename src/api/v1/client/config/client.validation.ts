@@ -3,7 +3,7 @@ import {
 } from 'express-validator'
 import { schemaValidation } from "../../shared/config/schema.validation"
 
-export const clientValidation: Schema = Object.assign(schemaValidation, {
+export const clientValidation: Schema = Object.assign({}, schemaValidation, {
     cpf: {
         in: ['body'],
         errorMessage: "cpf is missing",
