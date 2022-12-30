@@ -1,18 +1,20 @@
 import * as crypto from 'crypto'
 
+const PEPPER = process.env.PEPPER
+
 const config = {
   digest: "sha256",
   saltBytes: 16,
 };
 
-function encryptValue(value: string, salt: string): string {
+function encryptValue(value: string, salt?: string): string {
   if (!salt)
     salt = crypto
       .randomBytes(config.saltBytes)
       .toString("hex")
       .slice(0, config.saltBytes);
   let hash = crypto.createHmac(config.digest, salt);
-  hash.update(value);
+  hash.update(value + PEPPER);
   return "$" + "hmac" + "$" + salt + "$" + hash.digest("hex");
 }
 

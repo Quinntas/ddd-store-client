@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node src/test/tests.ts",
     "dev": "nodemon src/index.ts"
   },
   "repository": {
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/Quinntas/ddd-store-client.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Caio Quintas Santiago",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Quinntas/ddd-store-client/issues"

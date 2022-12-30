@@ -1,4 +1,5 @@
 import { User, Wallet } from "../types"
+import { encryptValue } from "../../../../utils/encryption"
 
 // How data will be returned to end user
 export const selectData = {
@@ -9,7 +10,6 @@ export const selectData = {
             name: true,
             email: true,
             password: true,
-            role: true
         }
     },
     wallet: {
@@ -43,7 +43,7 @@ export const createData = (user: Omit<User, "publicId">) => {
             create: {
                 name: user.name,
                 email: user.email,
-                password: user.password,
+                password: encryptValue(user.password),
             }
         },
         wallet: {
