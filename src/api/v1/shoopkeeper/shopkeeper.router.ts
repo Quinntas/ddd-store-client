@@ -5,11 +5,14 @@ import { shopkeeperValidation } from "./config/shopkeeper.validation"
 import * as ShopkeeperService from './shopkeeper.service'
 import HttpException from "../../../exception/http.exception";
 import { Prisma } from "@prisma/client";
+import authenticateJWT from "../../../middleware/authenticateJWT.middleware"
 
 export const shopkeeperRouter = express.Router();
 
-shopkeeperRouter.get("/:publicId", async (request: Request, response: Response, next: NextFunction) => {
+shopkeeperRouter.get("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     try {
         const shopkeeper = await ShopkeeperService.getShopkeeper(publicId)
         if (shopkeeper)
@@ -39,10 +42,12 @@ shopkeeperRouter.post("/", checkSchema(shopkeeperValidation), async (request: Re
 })
 
 shopkeeperRouter.put("/:publicId", checkSchema(shopkeeperValidation), async (request: Request, response: Response, next: NextFunction) => {
+    const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     const errors = validationResult(request)
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
-    const publicId: string = request.params.publicId
     try {
         const shopkeeper = await ShopkeeperService.updateShopkeeper(request.body, publicId)
         return response.status(200).json(shopkeeper)
@@ -58,6 +63,8 @@ shopkeeperRouter.put("/:publicId", checkSchema(shopkeeperValidation), async (req
 
 shopkeeperRouter.delete("/:publicId", async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     try {
         await ShopkeeperService.delteShopkeeper(publicId)
         return response.status(200).json({ publicId: "was deleted successfully" })
