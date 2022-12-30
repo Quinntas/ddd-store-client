@@ -1,6 +1,6 @@
 import { db } from "../../../utils/db.server";
 import { clientSelectData, updateData } from "./config/client.data";
-import { Client, NewClient } from "../../../types";
+import { Client, NewClient } from "../shared/types";
 
 export const getClient = async (publicId: string): Promise<Client | null> => {
     return db.client.findUnique({

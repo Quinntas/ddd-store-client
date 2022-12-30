@@ -2,6 +2,7 @@ import * as dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
 import { clientRouter } from "./api/v1/client/client.router";
+import { shopkeeperRouter } from "./api/v1/shoopkeeper/shopkeeper.router";
 import errorMiddleware from "./middleware/error.middleware";
 
 dotenv.config();
@@ -17,6 +18,7 @@ const APP = express();
 APP.use(cors());
 APP.use(express.json());
 APP.use("/api/v1/client", clientRouter)
+APP.use("/api/v1/shopkeeper", shopkeeperRouter)
 APP.use(errorMiddleware)
 
 APP.listen(PORT, () => {

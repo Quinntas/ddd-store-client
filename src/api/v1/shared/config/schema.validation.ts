@@ -13,7 +13,7 @@ export const schemaValidation: Schema = {
         },
         matches: {
             options: [/^[A-Za-z\s]+$/],
-            errorMessage: 'cpf must be alphabetic'
+            errorMessage: 'user.name must be alphabetic'
         }
     },
     "user.email": {

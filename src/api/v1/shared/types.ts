@@ -23,9 +23,15 @@ export type NewClient = {
     wallet: Omit<Wallet, "publicId">,
 }
 
-export type Shopkeepers = {
+export type Shopkeeper = {
     publicId: String,
-    cnpj: String,
+    cnpj: string,
     wallet: Wallet,
     user: User
+}
+
+export type NewShopkeeper = {
+    cnpj: string,
+    user: Omit<User, "publicId">,
+    wallet: Omit<Wallet, "publicId">,
 }
