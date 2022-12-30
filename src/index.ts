@@ -3,8 +3,8 @@ import express from "express"
 import cors from "cors"
 import { clientRouter } from "./api/v1/client/client.router";
 import { shopkeeperRouter } from "./api/v1/shoopkeeper/shopkeeper.router";
+import { loginRouter } from "./api/v1/login/login.router";
 import errorMiddleware from "./middleware/error.middleware";
-
 dotenv.config();
 
 if (!process.env.PORT) {
@@ -19,6 +19,7 @@ APP.use(cors());
 APP.use(express.json());
 APP.use("/api/v1/client", clientRouter)
 APP.use("/api/v1/shopkeeper", shopkeeperRouter)
+APP.use("/api/v1/login", loginRouter)
 APP.use(errorMiddleware)
 
 APP.listen(PORT, () => {

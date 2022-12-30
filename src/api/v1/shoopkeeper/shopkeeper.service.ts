@@ -1,5 +1,5 @@
 import { db } from "../../../utils/db.server";
-import { shopkeeperSelectData, updateData } from "./config/shopkeeper.data";
+import { shopkeeperSelectData, shopkeeperCreateData, shopkeeperUpdateData } from "./config/shopkeeper.data";
 import { Shopkeeper, NewShopkeeper } from "../shared/types";
 
 export const getShopkeeper = async (publicId: string): Promise<Shopkeeper | null> => {
@@ -13,7 +13,7 @@ export const getShopkeeper = async (publicId: string): Promise<Shopkeeper | null
 
 export const createShopkeeper = async (newShopkeeper: NewShopkeeper): Promise<Shopkeeper> => {
     return db.shopkeeper.create({
-        data: updateData(newShopkeeper),
+        data: shopkeeperCreateData(newShopkeeper),
         select: shopkeeperSelectData
     })
 }
@@ -23,7 +23,7 @@ export const updateShopkeeper = async (newShopkeeper: NewShopkeeper, publicId: s
         where: {
             publicId
         },
-        data: updateData(newShopkeeper),
+        data: shopkeeperUpdateData(newShopkeeper),
         select: shopkeeperSelectData,
     })
 }

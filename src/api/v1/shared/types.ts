@@ -3,6 +3,7 @@ export type User = {
     name: string,
     email: string,
     password: string
+    role:string
 }
 
 export type Wallet = {
@@ -24,7 +25,7 @@ export type NewClient = {
 }
 
 export type Shopkeeper = {
-    publicId: String,
+    publicId: string,
     cnpj: string,
     wallet: Wallet,
     user: User
@@ -34,4 +35,19 @@ export type NewShopkeeper = {
     cnpj: string,
     user: Omit<User, "publicId">,
     wallet: Omit<Wallet, "publicId">,
+}
+
+export type Transaction = {
+    publicId: string,
+    isAuthorized: boolean,
+    amount: number,
+    client: Client,
+    shopkeeper: Shopkeeper,
+}
+
+export type NewTransaction = {
+    isAuthorized: boolean,
+    amount: number,
+    clientPublicId: number
+    shopkeeperPublicId: number
 }

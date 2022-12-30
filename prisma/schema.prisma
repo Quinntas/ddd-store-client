@@ -58,12 +58,14 @@ model Shopkeeper {
   Transaction Transaction[]
 }
 
+// Transaction goes to client > shopkeeper
 model Transaction {
   id           Int        @id @default(autoincrement())
   publicId     String     @unique @default(uuid())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  isValid      Boolean
+  isAuthorized Boolean
+  amount       Float
   client       Client     @relation(fields: [clientId], references: [id])
   clientId     Int
   shopkeeper   Shopkeeper @relation(fields: [shopkeeperId], references: [id])
