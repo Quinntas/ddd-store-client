@@ -11,7 +11,7 @@ function authenticateJWT(request: Request, response: Response, next: NextFunctio
     const token = authHeader.split(' ')[1]
     try {
         const publicId = jwt.verify(token, JWT_TOKEN)
-        request.publicId = publicId
+        request.publicId = publicId.publicId
         next()
     }
     catch (error: any) {

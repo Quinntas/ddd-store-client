@@ -36,17 +36,27 @@ export type NewShopkeeper = {
     wallet: Omit<Wallet, "publicId">,
 }
 
+type Subset<K> = {
+    [attr in keyof K]?: K[attr] extends object
+    ? Subset<K[attr]>
+    : K[attr] extends object | null
+    ? Subset<K[attr]> | null
+    : K[attr] extends object | null | undefined
+    ? Subset<K[attr]> | null | undefined
+    : K[attr];
+};
+
 export type Transaction = {
     publicId: string,
     isAuthorized: boolean,
     amount: number,
-    client: Client,
-    shopkeeper: Shopkeeper,
+    client: Subset<Client>
+    shopkeeper: Subset<Shopkeeper>
 }
 
 export type NewTransaction = {
     isAuthorized: boolean,
     amount: number,
-    clientPublicId: number
-    shopkeeperPublicId: number
+    clientPublicID: string
+    shoopkeeperPublicId: string
 }
