@@ -8,6 +8,8 @@ export const loginRouter = express.Router();
 loginRouter.post("/", async (request: Request, response: Response, next: NextFunction) => {
     const email = request.body.email
     const password = request.body.password
+    if (!email || !password)
+        return next(new HttpException(400, 'bad request'))
     const token = await LoginService.login(email, password)
     if (!token)
         return next(new HttpException(401, 'not authorized'))

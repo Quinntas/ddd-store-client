@@ -6,6 +6,7 @@ import HttpException from "../../../exception/http.exception";
 import { clientValidation } from "./config/client.validation";
 import { Prisma } from "@prisma/client";
 import authenticateJWT from "../../../middleware/authenticateJWT.middleware";
+import { prismaErrorHandler } from "../../../exception/prisma.exception";
 
 export const clientRouter = express.Router();
 
@@ -19,7 +20,7 @@ clientRouter.get("/:publicId", authenticateJWT, async (request: Request, respons
             return response.status(200).json(client)
         return next(new HttpException(404, 'client not found'))
     } catch (error: any) {
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
@@ -31,12 +32,7 @@ clientRouter.post("/", checkSchema(clientValidation), async (request: Request, r
         const client = await ClientService.createClient(request.body)
         return response.status(200).json(client)
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2002':
-                    return next(new HttpException(400, 'the following fields already exists', error.meta))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
@@ -51,12 +47,7 @@ clientRouter.put("/:publicId", authenticateJWT, checkSchema(clientValidation), a
         const client = await ClientService.updateClient(request.body, publicId)
         return response.status(200).json(client)
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2025':
-                    return next(new HttpException(404, 'the following client was not found'))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
@@ -68,11 +59,6 @@ clientRouter.delete("/:publicId", authenticateJWT, async (request: Request, resp
         await ClientService.deleteClient(publicId)
         return response.status(200).json({ publicId: "was deleted successfully" })
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2025':
-                    return next(new HttpException(404, 'the following client was not found'))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })

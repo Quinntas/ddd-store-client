@@ -3,6 +3,8 @@ import { transactionSelectData, transactionCreateData, transactionUpdateData } f
 import { Transaction, NewTransaction } from "../shared/types";
 import { getClientInternalId } from "../client/client.service";
 import { getShopkeeperInternalId } from "../shoopkeeper/shopkeeper.service";
+import { findShopkeeperByUserId } from "../shared/user/user.service";
+import { patchCurrentBalance } from "../shared/wallet/wallet.service";
 
 export const getTransaction = async (publicId: string): Promise<Transaction | null> => {
     return db.transaction.findUnique({
@@ -24,11 +26,80 @@ export const listTransactions = async (publicId: string): Promise<Transaction[] 
                 user: {
                     publicId: publicId
                 }
-            }
-
+            },
         },
         select: transactionSelectData
     })
+}
+
+export const listUnauthorizedTransactions = async (userPublicId: string): Promise<Transaction[] | null> => {
+    const shoopkeeper = await findShopkeeperByUserId(userPublicId)
+    if (!shoopkeeper)
+        return null
+    return db.transaction.findMany({
+        where: {
+            shopkeeper: {
+                publicId: shoopkeeper.publicId
+            },
+            isAuthorized: false
+        },
+        select: transactionSelectData
+    })
+}
+
+// rmk
+export const authorizeTransaction = async (transactionPublicId: string, userPublicId: string): Promise<Transaction | null> => {
+    const shoopkeeper = await findShopkeeperByUserId(userPublicId)
+    const transaction = await db.transaction.findUnique({
+        where: {
+            publicId: transactionPublicId
+        },
+        select: {
+            isAuthorized: true,
+            shopkeeper: {
+                select: {
+                    publicId: true
+                }
+            },
+            publicId: true,
+            client: {
+                select: {
+                    publicId: true,
+                    wallet: {
+                        select: {
+                            currentBalance: true,
+                            publicId: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+    if (!shoopkeeper || !transaction || transaction?.shopkeeper.publicId !== shoopkeeper.publicId || transaction.isAuthorized)
+        return null
+
+    //@ts-ignore
+    if (transaction.client.wallet?.currentBalance - transaction.amount < 0)
+        return null
+        
+    // Client
+    //@ts-ignore
+    await patchCurrentBalance(transaction.client.wallet?.publicId, transaction.client.wallet?.currentBalance - transaction.amount)
+    // Shopkeeper
+    //@ts-ignore
+    await patchCurrentBalance(transaction.shopkeeper.wallet?.publicId, transaction.shopkeeper.wallet?.currentBalance + transaction.amount)
+    
+    const updatedTransaction = await db.transaction.update({
+        where: {
+            publicId: transaction?.publicId,
+        },
+        data: {
+            isAuthorized: true
+        },
+        select: transactionSelectData
+    })
+    
+    return updatedTransaction
 }
 
 export const createTransaction = async (newTransaction: NewTransaction): Promise<Transaction | null> => {
@@ -40,6 +111,10 @@ export const createTransaction = async (newTransaction: NewTransaction): Promise
         data: transactionCreateData(newTransaction, client.id, shoopkeeper.id),
         select: transactionSelectData
     })
+}
+
+export const checkTransactionIsFromPublicId = async (transactionPublicId: string, publicId: string): Promise<boolean> => {
+    return transactionPublicId in listTransactions(publicId)
 }
 
 export const updateTransaction = async (newTransaction: NewTransaction, publicId: string): Promise<Transaction | null> => {

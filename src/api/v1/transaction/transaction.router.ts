@@ -4,10 +4,19 @@ import { checkSchema, validationResult } from "express-validator"
 import * as TransactionService from "./transaction.service"
 import HttpException from "../../../exception/http.exception";
 import { transactionValidation } from "./config.ts/transaction.validation";
-import { Prisma } from "@prisma/client";
 import authenticateJWT from "../../../middleware/authenticateJWT.middleware";
+import { prismaErrorHandler } from "../../../exception/prisma.exception";
+import { Transaction } from "../shared/types";
 
 export const transactionRouter = express.Router();
+
+const checkTransactionOwner = async (transactionPublicId: string, userPublicId: string): Promise<boolean> => {
+    try {
+        return await TransactionService.checkTransactionIsFromPublicId(transactionPublicId, userPublicId)
+    } catch (error: any) {
+        return false
+    }
+}
 
 transactionRouter.get("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
@@ -18,9 +27,9 @@ transactionRouter.get("/:publicId", authenticateJWT, async (request: Request, re
                 return next(new HttpException(401, 'not authorized'))
             else
                 return response.status(200).json(transaction)
-        return next(new HttpException(404, 'transaction not found'))
+        return next(new HttpException(404, 'no transaction was not found'))
     } catch (error: any) {
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
@@ -29,14 +38,33 @@ transactionRouter.get("/list/:publicId", authenticateJWT, async (request: Reques
     if (publicId !== request.publicId)
         return next(new HttpException(401, 'not authorized'))
     try {
-        const transaction = await TransactionService.listTransactions(publicId)
+        const isTransactionAuthorized = request.query.isTransactionAuthorized
+        let transaction: Transaction[] | null = null
+        if (isTransactionAuthorized && isTransactionAuthorized === 'true')
+            transaction = await TransactionService.listTransactions(publicId)
+        else
+            transaction = await TransactionService.listUnauthorizedTransactions(publicId)
         if (transaction)
             return response.status(200).json(transaction)
-        return next(new HttpException(404, 'transaction not found'))
+        return next(new HttpException(404, 'no transaction was not found'))
     } catch (error: any) {
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
+
+transactionRouter.patch("/authorize/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
+    const publicId: string = request.params.publicId
+    try {
+        const transaction = await TransactionService.authorizeTransaction(publicId, request.publicId)
+        if(!transaction)
+            return next(new HttpException(400, 'bad request'))
+        return response.status(200).json(transaction)
+    } catch (error: any) {
+        console.log(error)
+        return prismaErrorHandler(error, next)
+    }
+})
+
 
 transactionRouter.post("/:publicId", authenticateJWT, checkSchema(transactionValidation), async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
@@ -49,18 +77,13 @@ transactionRouter.post("/:publicId", authenticateJWT, checkSchema(transactionVal
         const transaction = await TransactionService.createTransaction(request.body)
         return response.status(200).json(transaction)
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2002':
-                    return next(new HttpException(400, 'the following fields already exists', error.meta))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
 transactionRouter.put("/:publicId", authenticateJWT, checkSchema(transactionValidation), async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
+    if (!checkTransactionOwner(publicId, request.publicId))
         return next(new HttpException(401, 'not authorized'))
     const errors = validationResult(request)
     if (!errors.isEmpty())
@@ -69,28 +92,18 @@ transactionRouter.put("/:publicId", authenticateJWT, checkSchema(transactionVali
         const transaction = await TransactionService.updateTransaction(request.body, publicId)
         return response.status(200).json(transaction)
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2025':
-                    return next(new HttpException(404, 'the following transaction was not found'))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })
 
 transactionRouter.delete("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
+    if (!checkTransactionOwner(publicId, request.publicId))
         return next(new HttpException(401, 'not authorized'))
     try {
         await TransactionService.deleteTransaction(publicId)
         return response.status(200).json({ publicId: "was deleted successfully" })
     } catch (error: any) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError)
-            switch (error.code) {
-                case 'P2025':
-                    return next(new HttpException(404, 'the following transaction was not found'))
-            }
-        return next(new HttpException(500, 'a internal error has occured'))
+        return prismaErrorHandler(error, next)
     }
 })

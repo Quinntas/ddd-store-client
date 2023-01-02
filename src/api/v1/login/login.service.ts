@@ -5,7 +5,7 @@ import { verifyEncryptedValue } from "../../../utils/encryption";
 const JWT_TOKEN = process.env.JWT_TOKEN;
 
 
-export const login = async (email: string, password: string): Promise<Object | null> => {
+export const login = async (email: string, password: string, expiresIn: string = '1h'): Promise<Object | null> => {
     const user = await db.user.findUnique({ where: { email } })
     if (!verifyEncryptedValue(password, user?.password))
         return null
@@ -13,7 +13,7 @@ export const login = async (email: string, password: string): Promise<Object | n
         publicId: user?.publicId,
     }
     const token = jwt.sign(data, JWT_TOKEN, {
-        expiresIn: "72h",
+        expiresIn: expiresIn,
     });
     return token
 }
