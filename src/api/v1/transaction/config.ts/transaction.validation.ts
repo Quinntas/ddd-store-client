@@ -1,9 +1,8 @@
 import {
     Schema,
 } from 'express-validator'
-import { schemaValidation } from "../../shared/config/schema.validation"
 
-export const transactionValidation: Schema = Object.assign({}, schemaValidation, {
+export const transactionValidation: Schema = {
     amount: {
         in: ['body'],
         errorMessage: "amount is missing",
@@ -20,4 +19,3 @@ export const transactionValidation: Schema = Object.assign({}, schemaValidation,
         isString: true,
     },
 }
-)
