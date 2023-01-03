@@ -2,16 +2,6 @@ import { db } from "../../../utils/db.server";
 import { shopkeeperSelectData, shopkeeperCreateData, shopkeeperUpdateData } from "./config/shopkeeper.data";
 import { Shopkeeper, NewShopkeeper } from "../shared/types";
 
-export const getShopkeeperInternalId = async (publicId: string): Promise<{ id: number } | null> => {
-    return db.shopkeeper.findUnique({
-        where: {
-            publicId
-        },
-        select: {
-            id: true
-        }
-    })
-}
 
 export const getShopkeeper = async (publicId: string): Promise<Shopkeeper | null> => {
     return db.shopkeeper.findUnique({
