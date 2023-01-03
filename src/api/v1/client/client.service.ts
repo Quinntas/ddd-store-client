@@ -2,6 +2,17 @@ import { db } from "../../../utils/db.server";
 import { clientCreateData, clientSelectData, clientUpdateData } from "./config/client.data";
 import { Client, NewClient } from "../shared/types";
 
+export const getClientInternalId = async (publicId: string): Promise<{ id: number } | null> => {
+    return db.client.findUnique({
+        where: {
+            publicId
+        },
+        select: {
+            id: true
+        }
+    })
+}
+
 export const getClient = async (publicId: string): Promise<Client | null> => {
     return db.client.findUnique({
         where: {

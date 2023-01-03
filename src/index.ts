@@ -5,13 +5,10 @@ import { clientRouter } from "./api/v1/client/client.router";
 import { shopkeeperRouter } from "./api/v1/shoopkeeper/shopkeeper.router";
 import { loginRouter } from "./api/v1/login/login.router";
 import { registerRouter } from "./api/v1/register/register.router";
+import { transactionRouter } from "./api/v1/transaction/transaction.router";
 import errorMiddleware from "./middleware/error.middleware";
 
 dotenv.config();
-
-if (!process.env.PORT) {
-    process.exit(1)
-}
 
 const PORT: number = parseInt(process.env.PORT as string, 10)
 
@@ -23,6 +20,7 @@ APP.use("/api/v1/client", clientRouter)
 APP.use("/api/v1/shopkeeper", shopkeeperRouter)
 APP.use("/api/v1/login", loginRouter)
 APP.use("/api/v1/register", registerRouter)
+APP.use("/api/v1/transaction", transactionRouter)
 APP.use(errorMiddleware)
 
 APP.listen(PORT, () => {
