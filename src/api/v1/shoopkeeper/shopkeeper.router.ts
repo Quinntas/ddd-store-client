@@ -11,13 +11,13 @@ export const shopkeeperRouter = express.Router();
 
 shopkeeperRouter.get("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     try {
         const shopkeeper = await ShopkeeperService.getShopkeeper(publicId)
-        if (!shopkeeper)
-            return next(new HttpException(404, 'shopkeeper not found'))
-        else if (shopkeeper.user.publicId !== request.publicId)
-            return next(new HttpException(401, 'not authorized'))
-        return response.status(200).json(shopkeeper)
+        if (shopkeeper)
+            return response.status(200).json(shopkeeper)
+        return next(new HttpException(404, 'shopkeeper not found'))
     } catch (error: any) {
         return prismaErrorHandler(error, next)
     }
@@ -37,13 +37,13 @@ shopkeeperRouter.post("/", checkSchema(shopkeeperValidation), async (request: Re
 
 shopkeeperRouter.put("/:publicId", checkSchema(shopkeeperValidation), async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     const errors = validationResult(request)
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
     try {
-        const shopkeeper = await ShopkeeperService.updateShopkeeper(request.body, publicId, request.publicId)
-        if (!shopkeeper)
-            return next(new HttpException(401, 'not authorized'))
+        const shopkeeper = await ShopkeeperService.updateShopkeeper(request.body, publicId)
         return response.status(200).json(shopkeeper)
     } catch (error: any) {
         return prismaErrorHandler(error, next)
@@ -52,10 +52,10 @@ shopkeeperRouter.put("/:publicId", checkSchema(shopkeeperValidation), async (req
 
 shopkeeperRouter.delete("/:publicId", async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
+    if (publicId !== request.publicId)
+        return next(new HttpException(401, 'not authorized'))
     try {
-        const result = await ShopkeeperService.delteShopkeeper(publicId, request.publicId)
-        if (!result)
-            return next(new HttpException(400, 'not authorized'))
+        await ShopkeeperService.delteShopkeeper(publicId)
         return response.status(200).json({ publicId: "was deleted successfully" })
     } catch (error: any) {
         return prismaErrorHandler(error, next)

@@ -1,8 +1,7 @@
 import { db } from "../../../utils/db.server";
-import { transactionSelectData, transactionCreateData, transactionUpdateData, authorizeTransactionSelectData } from "./config.ts/transaction.data";
+import { transactionSelectData, transactionCreateData, transactionUpdateData } from "./config.ts/transaction.data";
 import { Transaction, NewTransaction } from "../shared/types";
 import { getClientInternalId } from "../client/client.service";
-import { getShopkeeperInternalId } from "../shoopkeeper/shopkeeper.service";
 import { findShopkeeperByUserId } from "../shared/user/user.service";
 import { patchCurrentBalance } from "../shared/wallet/wallet.service";
 
@@ -47,31 +46,48 @@ export const listUnauthorizedTransactions = async (userPublicId: string): Promis
     })
 }
 
-// Reduce line lenght and remake algo
+// rmk
 export const authorizeTransaction = async (transactionPublicId: string, userPublicId: string): Promise<Transaction | null> => {
     const shoopkeeper = await findShopkeeperByUserId(userPublicId)
-    // Get a reference of the old transaction
     const transaction = await db.transaction.findUnique({
         where: {
             publicId: transactionPublicId
         },
-        select: authorizeTransactionSelectData
+        select: {
+            isAuthorized: true,
+            shopkeeper: {
+                select: {
+                    publicId: true
+                }
+            },
+            publicId: true,
+            client: {
+                select: {
+                    publicId: true,
+                    wallet: {
+                        select: {
+                            currentBalance: true,
+                            publicId: true
+                        }
+                    }
+                }
+            }
+        }
     })
-
-    // Chek if everything is acording to the algo 
     if (!shoopkeeper || !transaction || transaction?.shopkeeper.publicId !== shoopkeeper.publicId || transaction.isAuthorized)
         return null
-    // check if client has money
+
+    //@ts-ignore
     if (transaction.client.wallet?.currentBalance - transaction.amount < 0)
         return null
 
-    // Remove money from client
+    // Client
+    //@ts-ignore
     await patchCurrentBalance(transaction.client.wallet?.publicId, transaction.client.wallet?.currentBalance - transaction.amount)
-
-    // Add money to shopkeeper
+    // Shopkeeper
+    //@ts-ignore
     await patchCurrentBalance(transaction.shopkeeper.wallet?.publicId, transaction.shopkeeper.wallet?.currentBalance + transaction.amount)
 
-    // Update the transaction
     const updatedTransaction = await db.transaction.update({
         where: {
             publicId: transaction?.publicId,
@@ -85,9 +101,9 @@ export const authorizeTransaction = async (transactionPublicId: string, userPubl
     return updatedTransaction
 }
 
-export const createTransaction = async (newTransaction: NewTransaction): Promise<Transaction | null> => {
+export const createTransaction = async (newTransaction: NewTransaction, authUserPublicId: string): Promise<Transaction | null> => {
     const client = await getClientInternalId(newTransaction.clientPublicId)
-    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shopkeeperPublicId)
+    const shoopkeeper = await findShopkeeperByUserId(authUserPublicId)
     if (!client || !shoopkeeper)
         return null
     return db.transaction.create({
@@ -100,9 +116,10 @@ export const checkTransactionIsFromPublicId = async (transactionPublicId: string
     return transactionPublicId in listTransactions(publicId)
 }
 
-export const updateTransaction = async (newTransaction: NewTransaction, publicId: string): Promise<Transaction | null> => {
+export const updateTransaction = async (newTransaction: NewTransaction, publicId: string, authUserPublicId: string): Promise<Transaction | null> => {
     const client = await getClientInternalId(newTransaction.clientPublicId)
-    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shopkeeperPublicId)
+    const shoopkeeper = await findShopkeeperByUserId(authUserPublicId)
+
     if (!client || !shoopkeeper)
         return null
     return db.transaction.update({
