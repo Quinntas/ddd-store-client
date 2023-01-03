@@ -8,6 +8,9 @@ import { registerRouter } from "./api/v1/register/register.router";
 import { transactionRouter } from "./api/v1/transaction/transaction.router";
 import errorMiddleware from "./middleware/error.middleware";
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('../swagger.json');
+
 dotenv.config();
 
 const PORT: number = parseInt(process.env.PORT as string, 10)
@@ -16,6 +19,11 @@ const APP = express();
 
 APP.use(cors());
 APP.use(express.json());
+APP.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+);
 APP.use("/api/v1/client", clientRouter)
 APP.use("/api/v1/shopkeeper", shopkeeperRouter)
 APP.use("/api/v1/login", loginRouter)
