@@ -3,7 +3,7 @@
 This is a bare-bones example of a express application providing a REST
 API to a prisma model.
 
-The entire application is contained within the `app.ts` file.
+The entire application is contained within the `src` folder.
 
 `config.ts` is a minimal Rack configuration.
 
