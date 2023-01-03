@@ -65,8 +65,8 @@ transactionRouter.post("/", authenticateJWT, checkSchema(transactionValidation),
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
     try {
-        const transaction = await TransactionService.createTransaction(request.body)
-        if(!transaction)
+        const transaction = await TransactionService.createTransaction(request.body, request.publicId)
+        if (!transaction)
             return next(new HttpException(400, 'bad request'))
         return response.status(200).json(transaction)
     } catch (error: any) {
@@ -82,7 +82,7 @@ transactionRouter.put("/:publicId", authenticateJWT, checkSchema(transactionVali
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
     try {
-        const transaction = await TransactionService.updateTransaction(request.body, publicId)
+        const transaction = await TransactionService.updateTransaction(request.body, publicId, request.publicId)
         return response.status(200).json(transaction)
     } catch (error: any) {
         return prismaErrorHandler(error, next)
