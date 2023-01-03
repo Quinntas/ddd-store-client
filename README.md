@@ -31,8 +31,8 @@ The REST API to the example app is described below.
 
 `GET /`
 
-    curl -i -H 'Accept: application/json' http://localhost:PORT/
+    curl -i -H 'Accept: application/json' http://localhost:PORT/api/v1/login
 
 ### Response
 
-    Response will be a detailed description for the application
+    Response will be a detailed description for the application login system
