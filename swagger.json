@@ -507,7 +507,7 @@
                 }
             }
         },
-        "/transaction/list/{shopkeeperPublicId}": {
+        "/transaction/list": {
             "get": {
                 "tags": [
                     "transaction"
@@ -517,8 +517,8 @@
                         "bearerAuth": []
                     }
                 ],
-                "summary": "List all transactions given an shopkeeper publicId",
-                "description": "List all transactions given an shopkeeper publicId",
+                "summary": "List all transactions for a shopkeeper",
+                "description": "List all transactions for a shopkeeper",
                 "operationId": "getTransactionList",
                 "parameters": [
                     {

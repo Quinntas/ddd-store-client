@@ -27,23 +27,20 @@ transactionRouter.get("/:publicId", authenticateJWT, async (request: Request, re
                 return next(new HttpException(401, 'not authorized'))
             else
                 return response.status(200).json(transaction)
-        return next(new HttpException(404, 'no transaction was not found'))
+        return next(new HttpException(404, 'transaction was not found'))
     } catch (error: any) {
         return prismaErrorHandler(error, next)
     }
 })
 
-transactionRouter.get("/list/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
-    const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
-        return next(new HttpException(401, 'not authorized'))
+transactionRouter.get("/list", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     try {
         const isTransactionAuthorized = request.query.isTransactionAuthorized
         let transaction: Transaction[] | null = null
         if (isTransactionAuthorized && isTransactionAuthorized === 'true')
-            transaction = await TransactionService.listTransactions(publicId)
+            transaction = await TransactionService.listTransactions(request.publicId)
         else
-            transaction = await TransactionService.listUnauthorizedTransactions(publicId)
+            transaction = await TransactionService.listUnauthorizedTransactions(request.publicId)
         if (transaction)
             return response.status(200).json(transaction)
         return next(new HttpException(404, 'no transaction was not found'))
@@ -56,7 +53,7 @@ transactionRouter.patch("/authorize/:publicId", authenticateJWT, async (request:
     const publicId: string = request.params.publicId
     try {
         const transaction = await TransactionService.authorizeTransaction(publicId, request.publicId)
-        if(!transaction)
+        if (!transaction)
             return next(new HttpException(400, 'bad request'))
         return response.status(200).json(transaction)
     } catch (error: any) {
@@ -65,16 +62,14 @@ transactionRouter.patch("/authorize/:publicId", authenticateJWT, async (request:
     }
 })
 
-
-transactionRouter.post("/:publicId", authenticateJWT, checkSchema(transactionValidation), async (request: Request, response: Response, next: NextFunction) => {
-    const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
-        return next(new HttpException(401, 'not authorized'))
+transactionRouter.post("/", authenticateJWT, checkSchema(transactionValidation), async (request: Request, response: Response, next: NextFunction) => {
     const errors = validationResult(request)
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
     try {
         const transaction = await TransactionService.createTransaction(request.body)
+        if(!transaction)
+            return next(new HttpException(400, 'bad request'))
         return response.status(200).json(transaction)
     } catch (error: any) {
         return prismaErrorHandler(error, next)

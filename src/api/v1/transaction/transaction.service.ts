@@ -58,9 +58,16 @@ export const authorizeTransaction = async (transactionPublicId: string, userPubl
             isAuthorized: true,
             shopkeeper: {
                 select: {
-                    publicId: true
+                    publicId: true,
+                    wallet: {
+                        select: {
+                            currentBalance: true,
+                            publicId: true
+                        }
+                    }
                 }
             },
+            amount: true,
             publicId: true,
             client: {
                 select: {
@@ -72,23 +79,20 @@ export const authorizeTransaction = async (transactionPublicId: string, userPubl
                         }
                     }
                 }
-            }
+            },
         }
     })
     if (!shoopkeeper || !transaction || transaction?.shopkeeper.publicId !== shoopkeeper.publicId || transaction.isAuthorized)
         return null
 
-    //@ts-ignore
     if (transaction.client.wallet?.currentBalance - transaction.amount < 0)
         return null
-        
+
     // Client
-    //@ts-ignore
     await patchCurrentBalance(transaction.client.wallet?.publicId, transaction.client.wallet?.currentBalance - transaction.amount)
     // Shopkeeper
-    //@ts-ignore
     await patchCurrentBalance(transaction.shopkeeper.wallet?.publicId, transaction.shopkeeper.wallet?.currentBalance + transaction.amount)
-    
+
     const updatedTransaction = await db.transaction.update({
         where: {
             publicId: transaction?.publicId,
@@ -98,13 +102,13 @@ export const authorizeTransaction = async (transactionPublicId: string, userPubl
         },
         select: transactionSelectData
     })
-    
+
     return updatedTransaction
 }
 
 export const createTransaction = async (newTransaction: NewTransaction): Promise<Transaction | null> => {
-    const client = await getClientInternalId(newTransaction.clientPublicID)
-    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shoopkeeperPublicId)
+    const client = await getClientInternalId(newTransaction.clientPublicId)
+    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shopkeeperPublicId)
     if (!client || !shoopkeeper)
         return null
     return db.transaction.create({
@@ -118,8 +122,8 @@ export const checkTransactionIsFromPublicId = async (transactionPublicId: string
 }
 
 export const updateTransaction = async (newTransaction: NewTransaction, publicId: string): Promise<Transaction | null> => {
-    const client = await getClientInternalId(newTransaction.clientPublicID)
-    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shoopkeeperPublicId)
+    const client = await getClientInternalId(newTransaction.clientPublicId)
+    const shoopkeeper = await getShopkeeperInternalId(newTransaction.shopkeeperPublicId)
     if (!client || !shoopkeeper)
         return null
     return db.transaction.update({

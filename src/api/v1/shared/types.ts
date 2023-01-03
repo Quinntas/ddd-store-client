@@ -57,6 +57,6 @@ export type Transaction = {
 export type NewTransaction = {
     isAuthorized: boolean,
     amount: number,
-    clientPublicID: string
-    shoopkeeperPublicId: string
+    clientPublicId: string
+    shopkeeperPublicId: string
 }

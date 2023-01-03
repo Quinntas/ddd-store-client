@@ -105,3 +105,21 @@ Usage for .data is for data formatting and data manipulation
 ``
 Inside this kind of file there is the express-validator configuration for body validation
 ``
+
+## shared
+
+``
+Anything that is required in multiple domains
+``
+
+## config
+
+``
+All the settings for a given domain
+``
+
+## utils
+
+``
+Contains the helper/util functions
+``

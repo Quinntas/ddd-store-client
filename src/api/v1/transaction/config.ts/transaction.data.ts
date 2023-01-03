@@ -45,7 +45,7 @@ export const transactionUpdateData = (newTransaction: NewTransaction, clientId: 
 
 export const transactionCreateData = (newTransaction: NewTransaction, clientId: number, shopkeeperId: number) => {
     return {
-        isAuthorized: newTransaction.isAuthorized,
+        isAuthorized: false,
         amount: newTransaction.amount,
         clientId: clientId,
         shopkeeperId: shopkeeperId
