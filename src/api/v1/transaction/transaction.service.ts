@@ -1,5 +1,5 @@
 import { db } from "../../../utils/db.server";
-import { transactionSelectData, transactionCreateData, transactionUpdateData } from "./config.ts/transaction.data";
+import { transactionSelectData, transactionCreateData, transactionUpdateData, authorizeTransactionSelectData } from "./config.ts/transaction.data";
 import { Transaction, NewTransaction } from "../shared/types";
 import { getClientInternalId } from "../client/client.service";
 import { getShopkeeperInternalId } from "../shoopkeeper/shopkeeper.service";
@@ -47,52 +47,31 @@ export const listUnauthorizedTransactions = async (userPublicId: string): Promis
     })
 }
 
-// rmk
+// Reduce line lenght and remake algo
 export const authorizeTransaction = async (transactionPublicId: string, userPublicId: string): Promise<Transaction | null> => {
     const shoopkeeper = await findShopkeeperByUserId(userPublicId)
+    // Get a reference of the old transaction
     const transaction = await db.transaction.findUnique({
         where: {
             publicId: transactionPublicId
         },
-        select: {
-            isAuthorized: true,
-            shopkeeper: {
-                select: {
-                    publicId: true,
-                    wallet: {
-                        select: {
-                            currentBalance: true,
-                            publicId: true
-                        }
-                    }
-                }
-            },
-            amount: true,
-            publicId: true,
-            client: {
-                select: {
-                    publicId: true,
-                    wallet: {
-                        select: {
-                            currentBalance: true,
-                            publicId: true
-                        }
-                    }
-                }
-            },
-        }
+        select: authorizeTransactionSelectData
     })
+
+    // Chek if everything is acording to the algo 
     if (!shoopkeeper || !transaction || transaction?.shopkeeper.publicId !== shoopkeeper.publicId || transaction.isAuthorized)
         return null
-
+    // check if client has money
     if (transaction.client.wallet?.currentBalance - transaction.amount < 0)
         return null
 
-    // Client
+    // Remove money from client
     await patchCurrentBalance(transaction.client.wallet?.publicId, transaction.client.wallet?.currentBalance - transaction.amount)
-    // Shopkeeper
+
+    // Add money to shopkeeper
     await patchCurrentBalance(transaction.shopkeeper.wallet?.publicId, transaction.shopkeeper.wallet?.currentBalance + transaction.amount)
 
+    // Update the transaction
     const updatedTransaction = await db.transaction.update({
         where: {
             publicId: transaction?.publicId,
