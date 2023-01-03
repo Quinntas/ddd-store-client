@@ -5,7 +5,7 @@ import { Shopkeeper, NewShopkeeper } from "../shared/types";
 export const getShopkeeperInternalId = async (publicId: string): Promise<{ id: number } | null> => {
     return db.shopkeeper.findUnique({
         where: {
-            publicId
+            publicId: publicId
         },
         select: {
             id: true
@@ -29,21 +29,27 @@ export const createShopkeeper = async (newShopkeeper: NewShopkeeper): Promise<Sh
     })
 }
 
-export const updateShopkeeper = async (newShopkeeper: NewShopkeeper, publicId: string): Promise<Shopkeeper> => {
-    return db.shopkeeper.update({
+export const updateShopkeeper = async (newShopkeeper: NewShopkeeper, publicId: string, authUserPublicId: string): Promise<Shopkeeper | null> => {
+    const shopkeeper = await db.shopkeeper.update({
         where: {
             publicId
         },
         data: shopkeeperUpdateData(newShopkeeper),
         select: shopkeeperSelectData,
     })
+    if (shopkeeper.user.publicId !== authUserPublicId)
+        return null
+    return shopkeeper
 }
 
-export const delteShopkeeper = async (publicId: string): Promise<void> => {
+export const delteShopkeeper = async (publicId: string, authUserPublicId: string): Promise<boolean> => {
+    const shopkeeper = await getShopkeeper(publicId)
+    if (!shopkeeper || shopkeeper.user.publicId !== authUserPublicId)
+        return false
     await db.shopkeeper.delete({
         where: {
             publicId
         }
     })
-    return
+    return true
 }

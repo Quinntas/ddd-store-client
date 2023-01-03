@@ -33,6 +33,34 @@ export const transactionSelectData = {
     }
 }
 
+export const authorizeTransactionSelectData = {
+    isAuthorized: true,
+    shopkeeper: {
+        select: {
+            publicId: true,
+            wallet: {
+                select: {
+                    currentBalance: true,
+                    publicId: true
+                }
+            }
+        }
+    },
+    amount: true,
+    publicId: true,
+    client: {
+        select: {
+            publicId: true,
+            wallet: {
+                select: {
+                    currentBalance: true,
+                    publicId: true
+                }
+            }
+        }
+    },
+}
+
 // How data will be updated
 export const transactionUpdateData = (newTransaction: NewTransaction, clientId: number, shopkeeperId: number) => {
     return {
@@ -45,7 +73,7 @@ export const transactionUpdateData = (newTransaction: NewTransaction, clientId: 
 
 export const transactionCreateData = (newTransaction: NewTransaction, clientId: number, shopkeeperId: number) => {
     return {
-        isAuthorized: newTransaction.isAuthorized,
+        isAuthorized: false,
         amount: newTransaction.amount,
         clientId: clientId,
         shopkeeperId: shopkeeperId

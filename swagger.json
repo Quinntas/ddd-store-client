@@ -1,0 +1,902 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "EXPRESS AND PRISMA RESTful AIP EXAMPLE",
+        "description": "This is a example of a backend restful api application using mainly express and prisma as its database, the repo was made by Caio Quintas, former backend programmer and tech analyst.\n\nSome useful links:\n- [Project Repo](https://github.com/Quinntas/ddd-store-client)\n- [Caio Quintas's github](https://github.com/Quinntas)",
+        "contact": {
+            "email": "caioquintassantiago@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/Quinntas/ddd-store-client/blob/main/LICENSE"
+        },
+        "version": "1.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:port/api/v1/"
+        }
+    ],
+    "paths": {
+        "/client/{publicId}": {
+            "put": {
+                "tags": [
+                    "client"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Update an existing client",
+                "description": "Update an existing client by publicId",
+                "operationId": "updateClient",
+                "requestBody": {
+                    "description": "Update an existent client in database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "client"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Get an existing client",
+                "description": "Get an existing client by publicId",
+                "operationId": "getClient",
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "Deletes a client",
+                "description": "delete a client",
+                "operationId": "deleteClient",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/client": {
+            "post": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Add a new client to the database",
+                "description": "Add a new client to the database",
+                "operationId": "addClient",
+                "requestBody": {
+                    "description": "Create a new client",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/shopkeeper/{publicId}": {
+            "put": {
+                "tags": [
+                    "shopkeeper"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Update an existing shopkeeper",
+                "description": "Update an existing shopkeeper by publicId",
+                "operationId": "updateShopkeeper",
+                "requestBody": {
+                    "description": "Update an existent shopkeeper in database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ShopkeeperPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Shopkeeper"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "shopkeeper"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Get an existing shopkeeper",
+                "description": "Get an existing shopkeeper by publicId",
+                "operationId": "getShopkeeper",
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Shopkeeper"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "shopkeeper"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Deletes a shopkeeper",
+                "description": "delete a shopkeeper",
+                "operationId": "deleteShopkeeper",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/shopkeeper": {
+            "post": {
+                "tags": [
+                    "shopkeeper"
+                ],
+                "summary": "Add a new shopkeeper to the database",
+                "description": "Add a new shopkeeper to the database",
+                "operationId": "addShopkeeper",
+                "requestBody": {
+                    "description": "Create a new shopkeeper",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ShopkeeperPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Shopkeeper"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "login"
+                ],
+                "summary": "Login into the application",
+                "description": "Login into the application",
+                "operationId": "login",
+                "requestBody": {
+                    "description": "Login into the application and returns a jwt auth token",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Login"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/register/{type}": {
+            "post": {
+                "tags": [
+                    "register"
+                ],
+                "summary": "Register into the application",
+                "description": "Register into the application",
+                "operationId": "register",
+                "requestBody": {
+                    "description": "Register into the application with the client/shopkeeper param",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "301": {
+                        "description": "Redirects to post:/client",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/transaction/{publicId}": {
+            "put": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Update an existing transaction",
+                "description": "Update an existing transaction by publicId",
+                "operationId": "updateTransaction",
+                "requestBody": {
+                    "description": "Update an existent transaction in database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transaction"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Get an existing transaction",
+                "description": "Get an existing transaction by publicId",
+                "operationId": "getTransaction",
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transaction"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Deletes a transaction",
+                "description": "delete a transaction",
+                "operationId": "deleteTransaction",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/transaction/list": {
+            "get": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "List all transactions for a shopkeeper",
+                "description": "List all transactions for a shopkeeper",
+                "operationId": "getTransactionList",
+                "parameters": [
+                    {
+                        "name": "isTransactionAuthorized",
+                        "in": "query",
+                        "description": "Returns either authorized or non authorized transactions",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Transaction"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/transaction/authorize/{publicId}": {
+            "patch": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Authorize a transaction",
+                "description": "Authorize a transaction",
+                "operationId": "authorizeTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transaction"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/transaction": {
+            "post": {
+                "tags": [
+                    "transaction"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "Add a new transaction to the database",
+                "description": "Add a new transaction to the database",
+                "operationId": "addTransaction",
+                "requestBody": {
+                    "description": "Create a new transaction",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Transaction"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation exception"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Token": {
+                "required": [
+                    "token"
+                ],
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "example": "pqwjpqwkopeqjwpocfkqwpjeqpowkepqowkeopqkwpeqwleqewu4hq"
+                    }
+                }
+            },
+            "Login": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "caioquintassantiago@gmail.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": 123456
+                    }
+                }
+            },
+            "Transaction": {
+                "required": [
+                    "isAuthorized",
+                    "amount",
+                    "client",
+                    "shopkeeper"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "isAuthorized": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "client": {
+                        "$ref": "#/components/schemas/Client"
+                    },
+                    "shopkeeper": {
+                        "$ref": "#/components/schemas/Shopkeeper"
+                    }
+                }
+            },
+            "TransactionPayload": {
+                "required": [
+                    "amount",
+                    "clientPublicId",
+                    "shopkeeperpublicId"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "clientPublicId": {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "shopkeeperPublicId": {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    }
+                }
+            },
+            "User": {
+                "required": [
+                    "email",
+                    "name",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Caio Quintas Santiago"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "caioquintassantiago@gmail.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "hmac$dasionda$ionsdsdijasdsacjdsndasdwcdn"
+                    }
+                }
+            },
+            "Wallet": {
+                "required": [
+                    "currentBalance"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "currentBalance": {
+                        "type": "integer",
+                        "example": 10
+                    }
+                }
+            },
+            "WalletPayload": {
+                "required": [
+                    "currentBalance"
+                ],
+                "type": "object",
+                "properties": {
+                    "currentBalance": {
+                        "type": "integer",
+                        "example": 10
+                    }
+                }
+            },
+            "UserPayload": {
+                "required": [
+                    "email",
+                    "name",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Caio Quintas Santiago"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "caioquintassantiago@gmail.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": 123456
+                    }
+                }
+            },
+            "Client": {
+                "required": [
+                    "cpf"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "cpf": {
+                        "type": "string",
+                        "example": 23472594685
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "wallet": {
+                        "$ref": "#/components/schemas/Wallet"
+                    }
+                }
+            },
+            "ClientPayload": {
+                "required": [
+                    "cpf"
+                ],
+                "type": "object",
+                "properties": {
+                    "cpf": {
+                        "type": "string",
+                        "example": 23472594685
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserPayload"
+                    },
+                    "wallet": {
+                        "$ref": "#/components/schemas/WalletPayload"
+                    }
+                }
+            },
+            "Shopkeeper": {
+                "required": [
+                    "cnpj"
+                ],
+                "type": "object",
+                "properties": {
+                    "publicId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "cnpj": {
+                        "type": "string",
+                        "example": 23472594685
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "wallet": {
+                        "$ref": "#/components/schemas/Wallet"
+                    }
+                }
+            },
+            "ShopkeeperPayload": {
+                "required": [
+                    "cnpj"
+                ],
+                "type": "object",
+                "properties": {
+                    "cnpj": {
+                        "type": "string",
+                        "example": 23472594685637
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserPayload"
+                    },
+                    "wallet": {
+                        "$ref": "#/components/schemas/WalletPayload"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

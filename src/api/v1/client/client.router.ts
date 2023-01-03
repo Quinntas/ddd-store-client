@@ -12,13 +12,13 @@ export const clientRouter = express.Router();
 
 clientRouter.get("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
-        return next(new HttpException(401, 'not authorized'))
     try {
         const client = await ClientService.getClient(publicId)
-        if (client)
-            return response.status(200).json(client)
-        return next(new HttpException(404, 'client not found'))
+        if (!client)
+            return next(new HttpException(404, 'client not found'))
+        else if (client.user.publicId !== request.publicId)
+            return next(new HttpException(400, 'not authorized'))
+        return response.status(200).json(client)
     } catch (error: any) {
         return prismaErrorHandler(error, next)
     }
@@ -38,13 +38,13 @@ clientRouter.post("/", checkSchema(clientValidation), async (request: Request, r
 
 clientRouter.put("/:publicId", authenticateJWT, checkSchema(clientValidation), async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
-        return next(new HttpException(401, 'not authorized'))
     const errors = validationResult(request)
     if (!errors.isEmpty())
         return response.status(400).json({ errors: errors.array() });
     try {
-        const client = await ClientService.updateClient(request.body, publicId)
+        const client = await ClientService.updateClient(request.body, publicId, request.publicId)
+        if (!client)
+            return next(new HttpException(400, 'not authorized'))
         return response.status(200).json(client)
     } catch (error: any) {
         return prismaErrorHandler(error, next)
@@ -53,10 +53,10 @@ clientRouter.put("/:publicId", authenticateJWT, checkSchema(clientValidation), a
 
 clientRouter.delete("/:publicId", authenticateJWT, async (request: Request, response: Response, next: NextFunction) => {
     const publicId: string = request.params.publicId
-    if (publicId !== request.publicId)
-        return next(new HttpException(401, 'not authorized'))
     try {
-        await ClientService.deleteClient(publicId)
+        const result = await ClientService.deleteClient(publicId, request.publicId)
+        if (!result)
+            return next(new HttpException(400, 'not authorized'))
         return response.status(200).json({ publicId: "was deleted successfully" })
     } catch (error: any) {
         return prismaErrorHandler(error, next)
